@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Natuurherkenningsquiz</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .card {
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    }
+    .feedback {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 Natuurherkenningsquiz</h1>
+  <label for="category">Soort:</label>
+  <select id="category">
+    <option value="plants">Kruidplanten</option>
+    <option value="trees">Bomen</option>
+    <option value="spiders">Spinnen</option>
+  </select>
+
+  <label for="difficulty">Moeilijkheidsgraad:</label>
+  <select id="difficulty">
+    <option value="easy">Makkelijk</option>
+    <option value="medium">Gemiddeld</option>
+    <option value="hard">Moeilijk</option>
+  </select>
+
+  <button onclick="generateQuiz()">Start quiz</button>
+
+  <div id="quiz-container"></div>
+  <button onclick="checkAnswers()">Controleer antwoorden</button>
+  <div id="result"></div>
+
+  <script>
+    const database = {
+      plants: [
+        { name: "Klaproos", difficulty: "easy", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Papaver_rhoeas_-_Klaproos_bloem.jpg/800px-Papaver_rhoeas_-_Klaproos_bloem.jpg" },
+        { name: "Madeliefje", difficulty: "easy", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Bellis_perennis_-_Kleiner_G%C3%A4nsebl%C3%BCmchen.jpg/800px-Bellis_perennis_-_Kleiner_G%C3%A4nsebl%C3%BCmchen.jpg" },
+        { name: "Zevenblad", difficulty: "medium", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Aegopodium_podagraria_003.JPG/800px-Aegopodium_podagraria_003.JPG" },
+        { name: "Eikvaren", difficulty: "hard", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Polypodium_vulgare.jpg/800px-Polypodium_vulgare.jpg" }
+      ],
+      trees: [
+        { name: "Zomereik", difficulty: "easy", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Quercus_robur_leaves.jpg/800px-Quercus_robur_leaves.jpg" },
+        { name: "Beuk", difficulty: "medium", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Fagus_sylvatica_foliage1.jpg/800px-Fagus_sylvatica_foliage1.jpg" },
+        { name: "Wilde appel", difficulty: "hard", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Malus_sylvestris0.jpg/800px-Malus_sylvestris0.jpg" }
+      ],
+      spiders: [
+        { name: "Kruisspin", difficulty: "easy", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Araneus_diadematus_%28aka%29.jpg/800px-Araneus_diadematus_%28aka%29.jpg" },
+        { name: "Viervlekwielwebspin", difficulty: "medium", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Araneus_quadratus.jpg/800px-Araneus_quadratus.jpg" },
+        { name: "Veldspin", difficulty: "hard", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Pardosa_amentata_female.jpg/800px-Pardosa_amentata_female.jpg" }
+      ]
+    };
+
+    let currentQuiz = [];
+
+    function generateQuiz() {
+      const category = document.getElementById('category').value;
+      const difficulty = document.getElementById('difficulty').value;
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = '';
+      currentQuiz = database[category].filter(item => item.difficulty === difficulty);
+
+      currentQuiz.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${item.image}" alt="Soort ${index + 1}" />
+          <input type="text" placeholder="Naam invoeren" id="answer-${index}" />
+          <div class="feedback" id="feedback-${index}"></div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function checkAnswers() {
+      let score = 0;
+      currentQuiz.forEach((item, index) => {
+        const userAnswer = document.getElementById(`answer-${index}`).value.trim().toLowerCase();
+        const correctAnswer = item.name.toLowerCase();
+        const feedback = document.getElementById(`feedback-${index}`);
+
+        if (userAnswer === correctAnswer) {
+          feedback.textContent = "✅ Correct!";
+          feedback.style.color = "green";
+          score++;
+        } else {
+          feedback.textContent = `❌ Fout. Het juiste antwoord is: ${item.name}`;
+          feedback.style.color = "red";
+        }
+      });
+      document.getElementById("result").innerHTML = `<h2>Je score: ${score} / ${currentQuiz.length}</h2>`;
+    }
+  </script>
+</body>
+</html>
